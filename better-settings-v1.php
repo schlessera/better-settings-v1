@@ -17,7 +17,7 @@
  * Plugin Name: Better Settings v1
  * Plugin URI:  https://www.alainschlesser.com/config-files-for-reusable-code/
  * Description: Example Code: Settings Page - Better Implementation v1
- * Version:     0.1.0
+ * Version:     0.1.1
  * Author:      Alain Schlesser
  * Author URI:  https://www.alainschlesser.com/
  * Text Domain: as-settings-better-v1

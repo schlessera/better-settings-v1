@@ -172,7 +172,7 @@ class SettingsPage {
 	protected function add_section( $section_data, $section_name, $args ) {
 		add_settings_section(
 			$section_name,
-			$section_name,
+			$section_data['title'],
 			function () use ( $section_data ) {
 				if ( array_key_exists( 'view', $section_data ) ) {
 					$view = new View( $section_data['view'] );
