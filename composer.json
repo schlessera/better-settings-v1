@@ -1,0 +1,25 @@
+{
+	"name": "alainschlesser/better-settings-v1",
+	"description": "Example Code: Settings Page - Better Implementation v1",
+	"type": "wordpress-plugin",
+	"homepage": "https://www.alainschlesser.com/config-files-for-reusable-code/",
+	"license": "GPL-2.0+",
+	"authors": [
+		{
+			"name": "Alain Schlesser",
+			"homepage": "https://www.alainschlesser.com/",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"issues": "https://www.github.com/alainschlesser/better-settings-v1/issues"
+	},
+	"autoload": {
+		"psr-4": {
+			"AlainSchlesser\\BetterSettings1\\": "src/"
+		}
+	},
+	"require": {
+		"composer/installers": "^1.0"
+	}
+}
