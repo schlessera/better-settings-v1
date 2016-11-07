@@ -57,18 +57,35 @@ class SettingsPage {
 	 *
 	 * @var array
 	 */
-	protected $page_hooks = array();
+	protected $page_hooks = [];
+
+	/**
+	 * Array of allowed tags to let through escaping.
+	 *
+	 * @since 0.1.4
+	 *
+	 * @var array
+	 */
+	protected $allowed_tags = [];
 
 	/**
 	 * Instantiate Settings object.
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param ConfigInterface $config Config object that contains Settings
-	 *                                configuration.
+	 * @param ConfigInterface $config       Config object that contains
+	 *                                      Settings
+	 *                                      configuration.
+	 * @param array|null      $allowed_tags Optional. Array of allowed tags to
+	 *                                      let through escaping functions. Set
+	 *                                      to sane defaults if none provided.
 	 */
-	public function __construct( ConfigInterface $config ) {
-		$this->config = $config;
+	public function __construct( ConfigInterface $config, array $allowed_tags = null ) {
+		global $allowedposttags;
+		$this->config       = $config;
+		$this->allowed_tags = null === $allowed_tags
+			? $this->prepare_allowed_tags( $allowedposttags )
+			: $allowed_tags;
 	}
 
 	/**
@@ -122,7 +139,7 @@ class SettingsPage {
 	 * @since 0.1.0
 	 *
 	 * @param array  $data              Arguments for page creation function.
-	 * @param string $key               Current page name.
+	 * @param string $name              Current page name.
 	 * @throws InvalidArgumentException If the page addition function could not
 	 *                                  be invoked.
 	 */
@@ -143,10 +160,10 @@ class SettingsPage {
 
 		// Prepare rendering callback.
 		$data['function'] = function () use ( $data ) {
-			if ( array_key_exists( 'view', $data ) ) {
-				$view = new View( $data['view'] );
-				echo $view->render();
+			if ( ! array_key_exists( 'view', $data ) ) {
+				return;
 			}
+			$this->render_view( $data['view'] );
 		};
 
 		$page_hook          = $this->invoke_function( $function, $data );
@@ -195,10 +212,10 @@ class SettingsPage {
 	protected function add_section( $data, $name, $args ) {
 		// prepare the rendering callback.
 		$render_callback = function () use ( $data ) {
-			if ( array_key_exists( 'view', $data ) ) {
-				$view = new View( $data['view'] );
-				echo $view->render();
+			if ( ! array_key_exists( 'view', $data ) ) {
+				return;
 			}
+			$this->render_view( $data['view'] );
 		};
 
 		add_settings_section(
@@ -228,12 +245,10 @@ class SettingsPage {
 		$render_callback = function () use ( $data, $args ) {
 			// Fetch $options to pass into view.
 			$options = get_option( $args['setting_name'] );
-			if ( array_key_exists( 'view', $data ) ) {
-				$view = new View( $data['view'] );
-				echo $view->render( [
-					'options' => $options,
-				] );
+			if ( ! array_key_exists( 'view', $data ) ) {
+				return;
 			}
+			$this->render_view( $data['view'], [ 'options' => $options ] );
 		};
 
 		add_settings_field(
@@ -243,5 +258,55 @@ class SettingsPage {
 			$args['page'],
 			$args['section']
 		);
+	}
+
+	/**
+	 * Render a given view.
+	 *
+	 * @since 0.1.4
+	 *
+	 * @param string|View $view    View to render. Can be a path to a view file
+	 *                             or an instance of a View object.
+	 * @param array|null  $context Optional. Context array for which to render
+	 *                             the view.
+	 */
+	protected function render_view( $view, array $context = [] ) {
+		$view_object = is_string( $view ) ? new View( $view ) : $view;
+		echo wp_kses(
+			$view_object->render( $context ),
+			$this->allowed_tags
+		);
+	}
+
+	/**
+	 * Prepare an array of allowed tags by adding form elements to the existing
+	 * array.
+	 *
+	 * This makes sure that the basic form elements always pass through the
+	 * escaping functions.
+	 *
+	 * @since 0.1.4
+	 *
+	 * @param array $allowed_tags Allowed tags as fetched from the WordPress
+	 *                            defaults.
+	 * @return array Modified tags array.
+	 */
+	protected function prepare_allowed_tags( $allowed_tags ) {
+		$form_tags = [
+			'form'  => [
+				'id'     => true,
+				'class'  => true,
+				'action' => true,
+				'method' => true,
+			],
+			'input' => [
+				'id'    => true,
+				'class' => true,
+				'type'  => true,
+				'name'  => true,
+				'value' => true,
+			],
+		];
+		return array_replace_recursive( $allowed_tags, $form_tags );
 	}
 }
