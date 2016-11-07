@@ -21,8 +21,8 @@ namespace AlainSchlesser\BetterSettings1;
 
 	<h2>Better Settings v1 Settings Page</h2>
 
-	<?php settings_fields( 'pluginPage' ); ?>
-	<?php do_settings_sections( 'pluginPage' ); ?>
+	<?php settings_fields( 'assb1_settings' ); ?>
+	<?php do_settings_sections( 'assb1_settings' ); ?>
 	<?php submit_button(); ?>
 
 </form>

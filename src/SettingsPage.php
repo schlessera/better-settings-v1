@@ -35,6 +35,12 @@ class SettingsPage {
 
 	use FunctionInvokerTrait;
 
+	/*
+	 * Configuration keys to use for the different Config sections.
+	 */
+	const CONFIG_KEY_PAGES    = 'pages';
+	const CONFIG_KEY_SETTINGS = 'settings';
+
 	/**
 	 * Config instance.
 	 *
@@ -82,7 +88,7 @@ class SettingsPage {
 	 * @since 0.1.0
 	 */
 	public function add_pages() {
-		$this->iterate( 'page' );
+		$this->iterate( static::CONFIG_KEY_PAGES );
 	}
 
 	/**
@@ -91,23 +97,23 @@ class SettingsPage {
 	 * @since 0.1.0
 	 */
 	public function init_settings() {
-		$this->iterate( 'setting' );
+		$this->iterate( static::CONFIG_KEY_SETTINGS );
 	}
 
 	/**
-	 * Iterate over a given collection of elements.
+	 * Iterate over a given collection of Config entries.
 	 *
 	 * @since 0.1.2
 	 *
-	 * @param string $element Type of element to iterate over.
+	 * @param string $type Type of entries to iterate over.
 	 */
-	protected function iterate( $element ) {
-		if ( ! $this->config->has_key( "${element}s" ) ) {
+	protected function iterate( $type ) {
+		if ( ! $this->config->has_key( "${type}" ) ) {
 			return;
 		}
 
-		$elements = $this->config->get_key( "${element}s" );
-		array_walk( $elements, [ $this, "add_${element}" ] );
+		$entries = $this->config->get_key( "${type}" );
+		array_walk( $entries, [ $this, "add_${type}_entry" ] );
 	}
 
 	/**
@@ -120,10 +126,10 @@ class SettingsPage {
 	 * @throws InvalidArgumentException If the page addition function could not
 	 *                                  be invoked.
 	 */
-	protected function add_page( $data, $key ) {
+	protected function add_pages_entry( $data, $name ) {
 		// Skip page creation if it already exists. This allows reuse of 1 page
 		// for several plugins.
-		if ( ! empty( $GLOBALS['admin_page_hooks'][ $data['menu_slug'] ] ) ) {
+		if ( ! empty( $GLOBALS['admin_page_hooks'][ $name ] ) ) {
 			return;
 		}
 
@@ -131,6 +137,9 @@ class SettingsPage {
 		$function = array_key_exists( 'parent_slug', $data )
 			? 'add_submenu_page'
 			: 'add_menu_page';
+
+		// Add the page name as manue slug.
+		$data['menu_slug'] = $name;
 
 		// Prepare rendering callback.
 		$data['function'] = function () use ( $data ) {
@@ -152,16 +161,24 @@ class SettingsPage {
 	 * @param array  $data Arguments for the register_setting WP function.
 	 * @param string $name Name of the option group.
 	 */
-	protected function add_setting( $data, $name ) {
+	protected function add_settings_entry( $data, $name ) {
+		// Default to using the same option group name as the settings name.
+		$option_group = isset( $data['option_group'] )
+			? $data['option_group']
+			: $name;
+
 		register_setting(
-			$data['option_group'],
+			$option_group,
 			$name,
-			$data['sanitize_callback']
+			// Optionally use a sanitization callback.
+			isset( $data['sanitize_callback'] )
+				? $data['sanitize_callback']
+				: null
 		);
 
 		// Prepare array to pass to array_walk as third parameter.
 		$args['setting_name'] = $name;
-		$args['page']         = $data['option_group'];
+		$args['page']         = $option_group;
 
 		array_walk( $data['sections'], [ $this, 'add_section' ], $args );
 	}
