@@ -17,7 +17,7 @@
 namespace AlainSchlesser\BetterSettings1;
 
 /**
- * Class MenuPageSlug.
+ * Interface MenuPageSlug.
  *
  * This class defines constants to use as the parent slug for attaching submenu
  * pages to built-in WordPress admin pages.
@@ -27,7 +27,7 @@ namespace AlainSchlesser\BetterSettings1;
  * @package AlainSchlesser\BetterSettings1
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-class MenuPageSlug {
+interface MenuPageSlug {
 
 	/**
 	 * Slugs to use as parents for the built-in WordPress menu pages.
