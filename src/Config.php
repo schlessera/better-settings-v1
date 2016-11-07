@@ -106,7 +106,7 @@ class Config extends ArrayObject implements ConfigInterface {
 			ob_start();
 			$data = include $uri;
 			ob_end_clean();
-			return $data;
+			return (array) $data;
 		} catch ( Exception $exception ) {
 			throw new RuntimeException(
 				sprintf(
