@@ -163,6 +163,7 @@ class SettingsPage {
 			if ( ! array_key_exists( 'view', $data ) ) {
 				return;
 			}
+
 			$this->render_view( $data['view'] );
 		};
 
@@ -215,6 +216,7 @@ class SettingsPage {
 			if ( ! array_key_exists( 'view', $data ) ) {
 				return;
 			}
+
 			$this->render_view( $data['view'] );
 		};
 
@@ -243,11 +245,12 @@ class SettingsPage {
 	protected function add_field( $data, $name, $args ) {
 		// Prepare the rendering callback.
 		$render_callback = function () use ( $data, $args ) {
-			// Fetch $options to pass into view.
-			$options = get_option( $args['setting_name'] );
 			if ( ! array_key_exists( 'view', $data ) ) {
 				return;
 			}
+
+			// Fetch $options to pass into view.
+			$options = get_option( $args['setting_name'] );
 			$this->render_view( $data['view'], [ 'options' => $options ] );
 		};
 
