@@ -82,28 +82,32 @@ class SettingsPage {
 	 * @since 0.1.0
 	 */
 	public function add_pages() {
-		$pages = [ 'menu_page', 'submenu_page' ];
-		foreach ( $pages as $page ) {
-			if ( $this->config->has_key( "${page}s" ) ) {
-				$pages = $this->config->get_key( "${page}s" );
-				array_walk( $pages, [ $this, 'add_page' ], "add_${page}" );
-			}
-		}
+		$this->iterate( 'page' );
 	}
 
 	/**
-	 * Initialize the settings page.
+	 * Initialize the settings persistence.
 	 *
 	 * @since 0.1.0
 	 */
 	public function init_settings() {
-		if ( $this->config->has_key( 'settings' ) ) {
-			$settings = $this->config->get_key( 'settings' );
-			array_walk(
-				$settings,
-				[ $this, 'add_setting' ]
-			);
+		$this->iterate( 'setting' );
+	}
+
+	/**
+	 * Iterate over a given collection of elements.
+	 *
+	 * @since 0.1.2
+	 *
+	 * @param string $element Type of element to iterate over.
+	 */
+	protected function iterate( $element ) {
+		if ( ! $this->config->has_key( "${element}s" ) ) {
+			return;
 		}
+
+		$elements = $this->config->get_key( "${element}s" );
+		array_walk( $elements, [ $this, "add_${element}" ] );
 	}
 
 	/**
@@ -113,25 +117,31 @@ class SettingsPage {
 	 *
 	 * @param array  $data              Arguments for page creation function.
 	 * @param string $key               Current page name.
-	 * @param string $function          Page creation function to be used. Must
-	 *                                  be either
-	 *                                  'add_menu_page' or 'add_submenu_page'.
 	 * @throws InvalidArgumentException If the page addition function could not
 	 *                                  be invoked.
 	 */
-	protected function add_page( $data, $key, $function ) {
+	protected function add_page( $data, $key ) {
 		// Skip page creation if it already exists. This allows reuse of 1 page
 		// for several plugins.
-		if ( empty( $GLOBALS['admin_page_hooks'][ $data['menu_slug'] ] ) ) {
-			$data['function']   = function () use ( $data ) {
-				if ( array_key_exists( 'view', $data ) ) {
-					$view = new View( $data['view'] );
-					echo $view->render();
-				}
-			};
-			$page_hook          = $this->invoke_function( $function, $data );
-			$this->page_hooks[] = $page_hook;
+		if ( ! empty( $GLOBALS['admin_page_hooks'][ $data['menu_slug'] ] ) ) {
+			return;
 		}
+
+		// If we have a parent slug, add as a submenu instead of a menu.
+		$function = array_key_exists( 'parent_slug', $data )
+			? 'add_submenu_page'
+			: 'add_menu_page';
+
+		// Prepare rendering callback.
+		$data['function'] = function () use ( $data ) {
+			if ( array_key_exists( 'view', $data ) ) {
+				$view = new View( $data['view'] );
+				echo $view->render();
+			}
+		};
+
+		$page_hook          = $this->invoke_function( $function, $data );
+		$this->page_hooks[] = $page_hook;
 	}
 
 	/**
@@ -139,24 +149,21 @@ class SettingsPage {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array  $setting_data Arguments for the register_setting WP
-	 *                             function.
-	 * @param string $setting_name Name of the option group.
+	 * @param array  $data Arguments for the register_setting WP function.
+	 * @param string $name Name of the option group.
 	 */
-	protected function add_setting( $setting_data, $setting_name ) {
+	protected function add_setting( $data, $name ) {
 		register_setting(
-			$setting_data['option_group'],
-			$setting_name,
-			$setting_data['sanitize_callback']
+			$data['option_group'],
+			$name,
+			$data['sanitize_callback']
 		);
 
 		// Prepare array to pass to array_walk as third parameter.
-		$args['setting_name'] = $setting_name;
-		$args['page']         = $setting_data['option_group'];
-		array_walk( $setting_data['sections'], [
-			$this,
-			'add_section',
-		], $args );
+		$args['setting_name'] = $name;
+		$args['page']         = $data['option_group'];
+
+		array_walk( $data['sections'], [ $this, 'add_section' ], $args );
 	}
 
 	/**
@@ -164,27 +171,30 @@ class SettingsPage {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array  $section_data Arguments for the add_settings_section WP
-	 *                             function.
-	 * @param string $section_name Name of the option section.
-	 * @param string $args         Additional arguments to pass on.
+	 * @param array  $data Arguments for the add_settings_section WP function.
+	 * @param string $name Name of the option section.
+	 * @param string $args Additional arguments to pass on.
 	 */
-	protected function add_section( $section_data, $section_name, $args ) {
+	protected function add_section( $data, $name, $args ) {
+		// prepare the rendering callback.
+		$render_callback = function () use ( $data ) {
+			if ( array_key_exists( 'view', $data ) ) {
+				$view = new View( $data['view'] );
+				echo $view->render();
+			}
+		};
+
 		add_settings_section(
-			$section_name,
-			$section_data['title'],
-			function () use ( $section_data ) {
-				if ( array_key_exists( 'view', $section_data ) ) {
-					$view = new View( $section_data['view'] );
-					echo $view->render();
-				}
-			},
+			$name,
+			$data['title'],
+			$render_callback,
 			$args['page']
 		);
 
 		// Extend array to pass to array_walk as third parameter.
-		$args['section'] = $section_name;
-		array_walk( $section_data['fields'], [ $this, 'add_field' ], $args );
+		$args['section'] = $name;
+
+		array_walk( $data['fields'], [ $this, 'add_field' ], $args );
 	}
 
 	/**
@@ -192,25 +202,27 @@ class SettingsPage {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array  $field_data Arguments for the add_settings_field WP
-	 *                           function.
-	 * @param string $field_name Name of the settings field.
-	 * @param array  $args       Contains both page and section name.
+	 * @param array  $data Arguments for the add_settings_field WP function.
+	 * @param string $name Name of the settings field.
+	 * @param array  $args Contains both page and section name.
 	 */
-	protected function add_field( $field_data, $field_name, $args ) {
+	protected function add_field( $data, $name, $args ) {
+		// Prepare the rendering callback.
+		$render_callback = function () use ( $data, $args ) {
+			// Fetch $options to pass into view.
+			$options = get_option( $args['setting_name'] );
+			if ( array_key_exists( 'view', $data ) ) {
+				$view = new View( $data['view'] );
+				echo $view->render( [
+					'options' => $options,
+				] );
+			}
+		};
+
 		add_settings_field(
-			$field_name,
-			$field_data['title'],
-			function () use ( $field_data, $args ) {
-				// Fetch $options to pass into view.
-				$options = get_option( $args['setting_name'] );
-				if ( array_key_exists( 'view', $field_data ) ) {
-					$view = new View( $field_data['view'] );
-					echo $view->render( [
-						'options' => $options,
-					] );
-				}
-			},
+			$name,
+			$data['title'],
+			$render_callback,
 			$args['page'],
 			$args['section']
 		);

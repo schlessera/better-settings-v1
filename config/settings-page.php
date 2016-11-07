@@ -17,10 +17,9 @@
 namespace AlainSchlesser\BetterSettings1;
 
 return [
-	'menu_pages'    => [],
-	'submenu_pages' => [
+	'pages' => [
 		[
-			'parent_slug' => 'options-general.php',
+			'parent_slug' => MenuPageSlug::SETTINGS,
 			'page_title'  => 'as-settings-better-v1',
 			'menu_title'  => 'as-settings-better-v1',
 			'capability'  => 'manage_options',
