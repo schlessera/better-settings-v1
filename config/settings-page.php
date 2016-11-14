@@ -117,18 +117,23 @@ $assb1_settings = [
 				 * 'title' (string)     => Title to display as the heading for
 				 *                         the section.
 				 *
+				 * 'default' (mixed)    => Default value to use when none was
+				 *                         stored yet.
+				 *
 				 * 'view' (string|View) => View to use for rendering the
 				 *                         section. Can be a path to a view file
 				 *                         or an instance of a View object.
 				 */
 
 				'assb1_text_field_first_name' => [
-					'title' => __( 'First Name', 'as-settings-better-v1' ),
-					'view'  => AS_BETTER_SETTINGS_1_DIR . 'views/first-name-field.php',
+					'title'   => __( 'First Name', 'as-settings-better-v1' ),
+				    'default' => 'Elliot',
+					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/first-name-field.php',
 				],
 				'assb1_text_field_last_name'  => [
-					'title' => __( 'Last Name', 'as-settings-better-v1' ),
-					'view'  => AS_BETTER_SETTINGS_1_DIR . 'views/last-name-field.php',
+					'title'   => __( 'Last Name', 'as-settings-better-v1' ),
+					'default' => 'Alderson',
+					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/last-name-field.php',
 				],
 			],
 		],
