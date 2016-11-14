@@ -127,7 +127,7 @@ $assb1_settings = [
 
 				'assb1_text_field_first_name' => [
 					'title'   => __( 'First Name', 'as-settings-better-v1' ),
-				    'default' => 'Elliot',
+					'default' => 'Elliot',
 					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/first-name-field.php',
 				],
 				'assb1_text_field_last_name'  => [
