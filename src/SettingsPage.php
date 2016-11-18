@@ -51,6 +51,15 @@ class SettingsPage {
 	protected $config;
 
 	/**
+	 * Option store instance.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var OptionStoreInterface;
+	 */
+	protected $option_store;
+
+	/**
 	 * Hooks to the settings pages that have been registered.
 	 *
 	 * @since 0.1.0
@@ -76,13 +85,15 @@ class SettingsPage {
 	 * @param ConfigInterface $config       Config object that contains
 	 *                                      Settings
 	 *                                      configuration.
+	 * @param OptionStoreInterface $option_store Option store.
 	 * @param array|null      $allowed_tags Optional. Array of allowed tags to
 	 *                                      let through escaping functions. Set
 	 *                                      to sane defaults if none provided.
 	 */
-	public function __construct( ConfigInterface $config, array $allowed_tags = null ) {
+	public function __construct( ConfigInterface $config, OptionStoreInterface $option_store, array $allowed_tags = null ) {
 		global $allowedposttags;
 		$this->config       = $config;
+		$this->option_store = $option_store;
 		$this->allowed_tags = null === $allowed_tags
 			? $this->prepare_allowed_tags( $allowedposttags )
 			: $allowed_tags;
@@ -250,14 +261,7 @@ class SettingsPage {
 			}
 
 			// Fetch $options to pass into view.
-			$options = get_option( $args['setting_name'] );
-
-			// Initialize the current option with a default value if needed.
-			if ( ! isset( $options[ $name ] ) ) {
-				$options[ $name ] = isset( $data['default'] )
-					? $data['default']
-					: '';
-			}
+			$options = $this->option_store->get_option( $args['setting_name'] );
 
 			$this->render_view( $data['view'], [ 'options' => $options ] );
 		};
