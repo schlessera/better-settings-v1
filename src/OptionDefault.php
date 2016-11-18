@@ -17,9 +17,9 @@
 namespace AlainSchlesser\BetterSettings1;
 
 /**
- * Class OptionStore.
+ * Class OptionDefault.
  *
- * This is a very basic adapter for the WordPress get_option()
+ * This is a very basic way to filter for the WordPress get_option()
  * function that can be configured to supply consistent default
  * values for particular options.
  *
@@ -28,7 +28,7 @@ namespace AlainSchlesser\BetterSettings1;
  * @package AlainSchlesser\BetterSettings1
  * @author  Dylan Kuhn <dylan@cyberhobo.net>
  */
-class OptionStore implements OptionStoreInterface {
+class OptionDefault {
 
 	/**
 	 * Config instance.
@@ -51,22 +51,29 @@ class OptionStore implements OptionStoreInterface {
 	}
 
 	/**
-	 * Get an option value, falling back to default values if configured.
+	 * Add default option filters.
+	 *
+	 * @since 0.1.0
+	 */
+	public function init() {
+		$options = $this->config->get_keys();
+		array_walk( $options, [ $this, 'add_filter' ] );
+	}
+
+	/**
+	 * Filter the default for an option value.
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  string $option  Name of option to retrieve. Expected to not be SQL-escaped.
-	 * @param  mixed  $default Optional. Default value to return if the option does not exist.
-	 *
-	 * @return bool Whether the specified key exists.
+	 * @param  string $option Name of option to retrieve. Expected to not be SQL-escaped.
 	 */
-	public function get_option( $option, $default = false ) {
+	protected function add_filter( $option ) {
 
-		if ( ! $default and $this->config->has_key( $option ) ) {
-			$default = $this->config->get_key( $option );
-		}
+		$default = $this->config->get_key( $option );
 
-		return get_option( $option, $default );
+		add_filter( 'default_option_' . $option, function () use ( $default ) {
+			return $default;
+		} );
 	}
 
 }

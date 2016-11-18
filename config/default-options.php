@@ -17,17 +17,7 @@
 namespace AlainSchlesser\BetterSettings1;
 
 /*
- * -----------------------------------------------------------------------------
- * Assemble Config.
- * -----------------------------------------------------------------------------
- */
-
-/*
  * This simple version of a Config file returns a normal PHP array.
- *
- * We've split up the array into several variables within this file to avoid
- * too many levels of indentation. However, the entire Config could just as well
- * be directly coded as one single array.
  */
 return [
 
