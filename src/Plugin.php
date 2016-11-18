@@ -30,7 +30,18 @@ class Plugin {
 	 * Launch the initialization process.
 	 */
 	public function init() {
+		add_action( 'plugins_loaded', [ $this, 'init_option_default' ] );
 		add_action( 'plugins_loaded', [ $this, 'init_settings_page' ] );
+	}
+
+	/**
+	 * Initialize Option default.
+	 */
+	public function init_option_default() {
+		// Load configuration for the option store.
+		$default_options_config = new Config( AS_BETTER_SETTINGS_1_DIR . 'config/default-options.php' );
+		// Initialize option default.
+		( new OptionDefault( $default_options_config ) )->init();
 	}
 
 	/**

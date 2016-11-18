@@ -252,13 +252,6 @@ class SettingsPage {
 			// Fetch $options to pass into view.
 			$options = get_option( $args['setting_name'] );
 
-			// Initialize the current option with a default value if needed.
-			if ( ! isset( $options[ $name ] ) ) {
-				$options[ $name ] = isset( $data['default'] )
-					? $data['default']
-					: '';
-			}
-
 			$this->render_view( $data['view'], [ 'options' => $options ] );
 		};
 
