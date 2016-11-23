@@ -261,7 +261,7 @@ class SettingsPage {
 			}
 
 			// Fetch $options to pass into view.
-			$options = $this->option_store->get_option( $args['setting_name'] );
+			$options = $this->option_store->get( $args['setting_name'] );
 
 			$this->render_view( $data['view'], [ 'options' => $options ] );
 		};

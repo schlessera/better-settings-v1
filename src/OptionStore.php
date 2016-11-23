@@ -59,7 +59,7 @@ class OptionStore implements OptionStoreInterface {
 	 *
 	 * @return bool Whether the specified key exists.
 	 */
-	public function get_option( $option ) {
+	public function get( $option ) {
 		$default = $this->config->has_key( $option ) ? $this->config->get_key( $option ) : null;
 		return get_option( $option, $default );
 	}

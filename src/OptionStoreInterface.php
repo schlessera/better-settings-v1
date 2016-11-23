@@ -36,5 +36,5 @@ interface OptionStoreInterface {
 	 * @param  string $option  Name of option to retrieve. Expected to not be SQL-escaped.
 	 * @return mixed
 	 */
-	public function get_option( $option );
+	public function get( $option );
 }
