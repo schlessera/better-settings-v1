@@ -17,7 +17,7 @@
 namespace AlainSchlesser\BetterSettings1;
 
 /**
- * Interface OptionStoreInterface.
+ * Interface OptionsStoreInterface.
  *
  * Options data retrieval abstraction.
  *
@@ -26,7 +26,7 @@ namespace AlainSchlesser\BetterSettings1;
  * @package AlainSchlesser\BetterSettings1
  * @author  Dylan Kuhn <dylan@cyberhobo.net>
  */
-interface OptionStoreInterface {
+interface OptionsStoreInterface {
 
 	/**
 	 * Get an option value.

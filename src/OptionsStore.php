@@ -17,7 +17,7 @@
 namespace AlainSchlesser\BetterSettings1;
 
 /**
- * Class OptionStore.
+ * Class OptionsStore.
  *
  * This is a very basic adapter for the WordPress get_option()
  * function that can be configured to supply consistent default
@@ -28,7 +28,7 @@ namespace AlainSchlesser\BetterSettings1;
  * @package AlainSchlesser\BetterSettings1
  * @author  Dylan Kuhn <dylan@cyberhobo.net>
  */
-class OptionStore implements OptionStoreInterface {
+class OptionsStore implements OptionsStoreInterface {
 
 	/**
 	 * Config instance.
@@ -40,7 +40,7 @@ class OptionStore implements OptionStoreInterface {
 	protected $config;
 
 	/**
-	 * Instantiate the OptionStore object.
+	 * Instantiate the OptionsStore object.
 	 *
 	 * @since 0.1.0
 	 *
