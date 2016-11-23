@@ -27,27 +27,40 @@ namespace AlainSchlesser\BetterSettings1;
 class Plugin {
 
 	/**
+	 * Option store instance.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var OptionStoreInterface;
+	 */
+	protected $option_store;
+
+	/**
 	 * Launch the initialization process.
 	 */
 	public function init() {
-
+		$this->init_option_store();
 		add_action( 'plugins_loaded', [ $this, 'init_settings_page' ] );
+	}
+
+	/**
+	 * Initialize OptionStore.
+	 */
+	public function init_option_store() {
+		// Load configuration for the option store.
+		$default_options_config = new Config( AS_BETTER_SETTINGS_1_DIR . 'config/default-options.php' );
+		// Initialize option store.
+		$this->option_store = new OptionStore( $default_options_config );
 	}
 
 	/**
 	 * Initialize Settings page.
 	 */
 	public function init_settings_page() {
-		// Load configuration for the option store.
-		$default_options_config = new Config( AS_BETTER_SETTINGS_1_DIR . 'config/default-options.php' );
-		// Initialize option store.
-		$option_store = new OptionStore( $default_options_config );
-
 		// Load configuration for the settings page.
 		$config = new Config( AS_BETTER_SETTINGS_1_DIR . 'config/settings-page.php' );
 		// Initialize settings page.
-		$settings_page = new SettingsPage( $config, $option_store );
-
+		$settings_page = new SettingsPage( $config, $this->option_store );
 		// Register the settings page with WordPress.
 		add_action( 'init', [ $settings_page, 'register' ] );
 	}
