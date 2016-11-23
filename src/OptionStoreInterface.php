@@ -34,8 +34,7 @@ interface OptionStoreInterface {
 	 * @since 0.1.0
 	 *
 	 * @param  string $option  Name of option to retrieve. Expected to not be SQL-escaped.
-	 * @param  mixed  $default Optional. Default value to return if the option does not exist.
 	 * @return mixed
 	 */
-	public function get_option( $option, $default = false );
+	public function get_option( $option );
 }

@@ -56,16 +56,11 @@ class OptionStore implements OptionStoreInterface {
 	 * @since 0.1.0
 	 *
 	 * @param  string $option  Name of option to retrieve. Expected to not be SQL-escaped.
-	 * @param  mixed  $default Optional. Default value to return if the option does not exist.
 	 *
 	 * @return bool Whether the specified key exists.
 	 */
-	public function get_option( $option, $default = false ) {
-
-		if ( ! $default and $this->config->has_key( $option ) ) {
-			$default = $this->config->get_key( $option );
-		}
-
+	public function get_option( $option ) {
+		$default = $this->config->has_key( $option ) ? $this->config->get_key( $option ) : null;
 		return get_option( $option, $default );
 	}
 
