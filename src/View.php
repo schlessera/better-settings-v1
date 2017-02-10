@@ -48,7 +48,7 @@ class View {
 	 * @param array $context Optional. Associative array with context variables.
 	 * @return string HTML rendering of the view.
 	 */
-	public function render( array $context = [] ) {
+	public function render( array $context = [], $name ) {
 		if ( ! is_readable( $this->filename ) ) {
 			return '';
 		}

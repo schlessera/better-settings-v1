@@ -128,12 +128,12 @@ $assb1_settings = [
 				'assb1_text_field_first_name' => [
 					'title'   => __( 'First Name', 'as-settings-better-v1' ),
 					'default' => 'Elliot',
-					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/first-name-field.php',
+					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/text-field.php',
 				],
 				'assb1_text_field_last_name'  => [
 					'title'   => __( 'Last Name', 'as-settings-better-v1' ),
 					'default' => 'Alderson',
-					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/last-name-field.php',
+					'view'    => AS_BETTER_SETTINGS_1_DIR . 'views/text-field.php',
 				],
 			],
 		],

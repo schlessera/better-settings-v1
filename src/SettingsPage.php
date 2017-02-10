@@ -159,12 +159,12 @@ class SettingsPage {
 		$data['menu_slug'] = $name;
 
 		// Prepare rendering callback.
-		$data['function'] = function () use ( $data ) {
+		$data['function'] = function () use ( $data, $name ) {
 			if ( ! array_key_exists( 'view', $data ) ) {
 				return;
 			}
 
-			$this->render_view( $data['view'] );
+			$this->render_view( $data['view'], array(), $name );
 		};
 
 		$page_hook          = $this->invoke_function( $function, $data );
@@ -259,7 +259,7 @@ class SettingsPage {
 					: '';
 			}
 
-			$this->render_view( $data['view'], [ 'options' => $options ] );
+			$this->render_view( $data['view'], [ 'options' => $options ], $name );
 		};
 
 		add_settings_field(
@@ -280,11 +280,12 @@ class SettingsPage {
 	 *                             or an instance of a View object.
 	 * @param array|null  $context Optional. Context array for which to render
 	 *                             the view.
+	 * @param string|null $name    Optional. Name of the field that will be rendered.
 	 */
-	protected function render_view( $view, array $context = [] ) {
+	protected function render_view( $view, array $context = [], $name = '' ) {
 		$view_object = is_string( $view ) ? new View( $view ) : $view;
 		echo wp_kses(
-			$view_object->render( $context ),
+			$view_object->render( $context, $name ),
 			$this->allowed_tags
 		);
 	}
