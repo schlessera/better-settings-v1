@@ -16,8 +16,11 @@
 
 namespace AlainSchlesser\BetterSettings1;
 
-/** @var array $options Options passed through from SettingsPage class. */
+/**
+ * @var string $name Name of the field passed through from SettingsPage class.
+ * @var array $options Options passed through from SettingsPage class.
+ */
 
 ?>
-<input type='text' name='assb1_settings[assb1_text_field_last_name]'
-       value='<?php echo $options['assb1_text_field_last_name']; ?>'>
+<input type='text' name='assb1_settings[<?php echo $name; ?>]'
+       value='<?php echo $options["{$name}"]; ?>'>
